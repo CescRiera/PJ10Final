@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LandingScreen from './components/LandingScreen';
 import InvestmentsScreen from './components/InvestmentsScreen';
+import WaterConsumptionTable from './components/WaterConsumptionTable';
 import Header from './components/header';
 
 const WaterScreen = () => (
@@ -41,7 +42,7 @@ export default function App() {
             {props => <InvestmentsScreen {...props} />}
           </Stack.Screen>
           <Stack.Screen name="Water" component={WaterScreen} />
-          <Stack.Screen name="Table" component={TableScreen} />
+          <Stack.Screen name="Table" component={WaterConsumptionTable} />
           <Stack.Screen name="Contact" component={ContactScreen} />
         </Stack.Navigator>
       </SafeAreaView>
