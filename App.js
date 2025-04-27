@@ -1,67 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Animated } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LandingScreen from './components/LandingScreen';
 import InvestmentsScreen from './components/InvestmentsScreen';
+import Header from './components/header';
 
-// Placeholder components for future implementation
-const WaterScreen = () => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Water Screen</Text></View>;
-const TableScreen = () => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Table Screen</Text></View>;
-const ContactScreen = () => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Contact Screen</Text></View>;
+const WaterScreen = () => (
+  <View style={styles.placeholder}>
+    <Text>Water Screen</Text>
+  </View>
+);
+const TableScreen = () => (
+  <View style={styles.placeholder}>
+    <Text>Table Screen</Text>
+  </View>
+);
+const ContactScreen = () => (
+  <View style={styles.placeholder}>
+    <Text>Contact Screen</Text>
+  </View>
+);
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('Landing');
-  const [prevScreen, setPrevScreen] = useState(null);
-  const fadeAnim = useState(new Animated.Value(1))[0];
-
-  const navigate = (screenName) => {
-    if (currentScreen !== screenName) {
-      setPrevScreen(currentScreen);
-      
-      // Fade out current screen
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }).start(() => {
-        // Change screen
-        setCurrentScreen(screenName);
-        
-        // Fade in new screen
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }).start();
-      });
-    }
-  };
-
-  // Render the appropriate screen based on the current state
-  const renderScreen = () => {
-    switch (currentScreen) {
-      case 'Landing':
-        return <LandingScreen navigation={{ navigate }} />;
-      case 'Investments':
-        return <InvestmentsScreen navigation={{ navigate }} />;
-      case 'Water':
-        return <WaterScreen />;
-      case 'Table':
-        return <TableScreen />;
-      case 'Contact':
-        return <ContactScreen />;
-      default:
-        return <LandingScreen navigation={{ navigate }} />;
-    }
-  };
-
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar style="auto" />
-      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-        {renderScreen()}
-      </Animated.View>
-    </SafeAreaView>
+    <NavigationContainer>
+
+      <SafeAreaView style={styles.safeArea}>
+        <Header />
+        <Stack.Navigator
+          initialRouteName="Landing"
+          screenOptions={{ headerShown: false }}
+        >
+          <Stack.Screen name="Landing">
+            {props => <LandingScreen {...props} />}
+          </Stack.Screen>
+          <Stack.Screen name="Investments">
+            {props => <InvestmentsScreen {...props} />}
+          </Stack.Screen>
+          <Stack.Screen name="Water" component={WaterScreen} />
+          <Stack.Screen name="Table" component={TableScreen} />
+          <Stack.Screen name="Contact" component={ContactScreen} />
+        </Stack.Navigator>
+      </SafeAreaView>
+    </NavigationContainer>
   );
 }
 
@@ -70,8 +54,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFAEB',
   },
-  container: {
+  placeholder: {
     flex: 1,
-    paddingTop: 15, // Extra padding to account for notches and camera cutouts
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-}); 
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 50,
+    backgroundColor: '#FFFAEB',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

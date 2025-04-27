@@ -5,30 +5,25 @@ import { LineChart } from 'react-native-chart-kit';
 const { width } = Dimensions.get('window');
 
 const WaterConsumptionChart = () => {
-  // Data for water consumption across different African regions over time
   const data = {
     labels: ['2000', '2005', '2010', '2015', '2020', '2025'],
     datasets: [
       {
         data: [21, 24, 28, 32, 35, 37],
-        color: (opacity = 1) => `rgba(229, 155, 80, ${opacity})`, // #E59B50
+        color: (opacity = 1) => `rgba(229, 155, 80, ${opacity})`,
         strokeWidth: 2,
-        label: 'Nord d\'Àfrica'
       },
       {
         data: [18, 20, 22, 25, 28, 30],
-        color: (opacity = 1) => `rgba(115, 204, 212, ${opacity})`, // #73CCD4
+        color: (opacity = 1) => `rgba(115, 204, 212, ${opacity})`,
         strokeWidth: 2,
-        label: 'Àfrica Subsahariana'
       },
       {
         data: [19.5, 22, 25, 28.5, 31.5, 34],
-        color: (opacity = 1) => `rgba(65, 51, 221, ${opacity})`, //rgb(65, 51, 221)
+        color: (opacity = 1) => `rgba(65, 51, 221, ${opacity})`,
         strokeWidth: 2,
-        label: 'Mitjana General'
       }
     ],
-    legend: ['Nord d\'Àfrica', 'Àfrica Subsahariana', 'Mitjana General']
   };
 
   const chartConfig = {
@@ -36,7 +31,7 @@ const WaterConsumptionChart = () => {
     backgroundGradientFrom: '#110E2F',
     backgroundGradientTo: '#110E2F',
     decimalPlaces: 0,
-    color: (opacity = 1) => `rgba(255, 250, 235, ${opacity})`, // #FFFAEB
+    color: (opacity = 1) => `rgba(255, 250, 235, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(255, 250, 235, ${opacity})`,
     style: {
       borderRadius: 16
@@ -70,40 +65,22 @@ const WaterConsumptionChart = () => {
         segments={5}
         yAxisSuffix="L"
         yAxisInterval={5}
-        legend={data.legend}
-        renderDotContent={({ x, y, indexData, index, dataset }) => {
-          // Check if dataset and dataset.color exist before using them
-          if (!dataset || typeof dataset.color !== 'function') {
-            return null;
-          }
-          
-          return (
-            <View key={index} style={{
-              position: 'absolute',
-              top: y - 12,
-              left: x - 12,
-              width: 24,
-              height: 24,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              {index === 5 && (
-                <Text style={{ 
-                  fontSize: 9, 
-                  color: dataset.color(1),
-                  fontWeight: 'bold',
-                  backgroundColor: 'rgba(65, 51, 221, 1)',
-                  paddingHorizontal: 4,
-                  paddingVertical: 2,
-                  borderRadius: 4,
-                }}>
-                  {indexData}L
-                </Text>
-              )}
-            </View>
-          );
-        }}
       />
+
+      <View style={styles.legendContainer}>
+        <View style={styles.legendItem}>
+          <View style={[styles.legendColor, { backgroundColor: '#E59B50' }]} />
+          <Text style={styles.legendText}>Nord d'Àfrica</Text>
+        </View>
+        <View style={styles.legendItem}>
+          <View style={[styles.legendColor, { backgroundColor: '#73CCD4' }]} />
+          <Text style={styles.legendText}>Àfrica Subsahariana</Text>
+        </View>
+        <View style={styles.legendItem}>
+          <View style={[styles.legendColor, { backgroundColor: 'rgb(65, 51, 221)' }]} />
+          <Text style={styles.legendText}>Mitjana General</Text>
+        </View>
+      </View>
     </View>
   );
 };
@@ -124,7 +101,29 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderRadius: 16,
     padding: 10,
+  },
+  legendContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 10,
+    width: '100%',
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    
+  },
+  legendColor: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 6,
+    marginLeft: 3,
+  },
+  legendText: {
+    color: '#FFFAEB',
+    fontSize: 12,
   }
 });
 
-export default WaterConsumptionChart; 
+export default WaterConsumptionChart;
