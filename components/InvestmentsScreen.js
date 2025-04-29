@@ -225,17 +225,7 @@ const InvestmentsScreen = ({ navigation }) => {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <StatusBar style="dark" />
       
-      {/* Header with back button */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.navigate('Landing')}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.backButtonText}>← Tornar</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Inversions</Text>
-      </View>
+
       
       {/* Intro Section */}
       <Animated.View style={[styles.introSection, { opacity: fadeAnim }]}>
@@ -343,21 +333,9 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   introSection: {
-    paddingHorizontal: 20,
     paddingVertical: 20,
   },
-  introBox: {
-    backgroundColor: 'rgba(115, 204, 212, 0.1)',
-    borderRadius: 16,
-    padding: 24,
-    shadowColor: '#110E2F',
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: 'rgba(17, 14, 47, 0.1)',
-  },
+
   pageTitle: {
     fontSize: Math.min(24, width * 0.06),
     fontWeight: 'bold',
@@ -367,9 +345,10 @@ const styles = StyleSheet.create({
   },
   pageDescription: {
     fontSize: Math.min(16, width * 0.04),
+    paddingHorizontal: 20,
     lineHeight: 24,
     color: 'rgba(17, 14, 47, 0.9)',
-    textAlign: 'center',
+    textAlign: 'justify',
   },
   investmentSection: {
     paddingHorizontal: 20,
@@ -380,6 +359,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   sectionHeader: {
+    marginLeft: 10,
     fontSize: 22,
     fontWeight: 'bold',
     color: '#110E2F',
@@ -501,9 +481,7 @@ const styles = StyleSheet.create({
   },
   analysisSection: {
     backgroundColor: 'rgba(17, 14, 47, 0.05)',
-    borderRadius: 16,
     padding: 24,
-    margin: 20,
     marginTop: 0,
     shadowColor: '#000',
     shadowOpacity: 0.05,
@@ -518,12 +496,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   chartSectionContainer: {
-    paddingHorizontal: 20,
     marginBottom: 30,
   },
   chartContainer: {
     backgroundColor: 'white',
-    borderRadius: 12,
     padding: 8,
     shadowColor: '#000',
     shadowOpacity: 0.1,

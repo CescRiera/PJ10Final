@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, Platform } from 'react-native';
 import * as SQLite from 'expo-sqlite';
+import * as FileSystem from 'expo-file-system';
+import Papa from 'papaparse';
 
 const estils = StyleSheet.create({
   contenidor: {
@@ -75,19 +77,6 @@ const estils = StyleSheet.create({
   }
 });
 
-const CSV_DATA = [
-  { id: 1, pais: 'Nigeria', consum: '50', poblacio: '206' },
-  { id: 2, pais: 'South Africa', consum: '220', poblacio: '59' },
-  { id: 3, pais: 'Egypt', consum: '300', poblacio: '104' },
-  { id: 4, pais: 'Kenya', consum: '90', poblacio: '54' },
-  { id: 5, pais: 'Ghana', consum: '70', poblacio: '31' },
-  { id: 6, pais: 'Ethiopia', consum: '40', poblacio: '115' },
-  { id: 7, pais: 'Morocco', consum: '100', poblacio: '37' },
-  { id: 8, pais: 'Algeria', consum: '120', poblacio: '43' },
-  { id: 9, pais: 'Tanzania', consum: '60', poblacio: '60' },
-  { id: 10, pais: 'Uganda', consum: '55', poblacio: '46' },
-];
-
 export class WaterConsumptionTable extends React.Component {
   constructor(props) {
     super(props);
@@ -105,54 +94,68 @@ export class WaterConsumptionTable extends React.Component {
       return;
     }
 
-    SQLite.openDatabaseAsync('waterConsumption.db').then(db => {
-      db.execAsync(`
-        PRAGMA journal_mode = WAL;
-        CREATE TABLE IF NOT EXISTS consums (
-          id INTEGER PRIMARY KEY NOT NULL,
-          pais TEXT NOT NULL,
-          consum TEXT,
-          poblacio TEXT
-        );
-      `).then(() => {
-        this.insertarDadesCSV(db);
-      }).catch(error => {
-        this.handleError('Error al crear tabla', error);
+    this.carregarDadesCSV();
+  }
+
+  carregarDadesCSV = async () => {
+    try {
+      const csvPath = FileSystem.documentDirectory + 'waterconsum.csv';
+      const csvContent = await FileSystem.readAsStringAsync(csvPath);
+      
+      Papa.parse(csvContent, {
+        header: true,
+        complete: (results) => {
+          // Once we have the CSV data, initialize SQLite and insert the data
+          SQLite.openDatabaseAsync('waterconsumption.db').then(db => {
+            // First create the table
+            db.execAsync(`
+              PRAGMA journal_mode = WAL;
+              CREATE TABLE IF NOT EXISTS water_consumption (
+                id INTEGER PRIMARY KEY NOT NULL,
+                pais TEXT NOT NULL,
+                consum INTEGER,
+                poblacio INTEGER
+              );
+            `).then(() => {
+              // Then insert the data from CSV
+              const insertPromises = results.data.map(item => 
+                db.runAsync('INSERT OR IGNORE INTO water_consumption (id, pais, consum, poblacio) VALUES (?, ?, ?, ?)',
+                  [parseInt(item.id), item.pais, parseInt(item.consum), parseInt(item.poblacio)])
+              );
+
+              Promise.all(insertPromises).then(() => {
+                // After inserting, read and display the data
+                db.getAllAsync('SELECT * FROM water_consumption ORDER BY id').then((resultat) => {
+                  this.setState({ dades: resultat, carregant: false });
+                  
+                  // Log to console
+                  for (const item of resultat) {
+                    console.log(item.id, item.pais, item.consum, item.poblacio);
+                  }
+                }).catch(error => {
+                  console.log(error);
+                  this.setState({ error: 'Error al consultar dades', carregant: false });
+                });
+              }).catch(error => {
+                console.log(error);
+                this.setState({ error: 'Error al insertar dades', carregant: false });
+              });
+            }).catch(error => {
+              console.log(error);
+              this.setState({ error: 'Error al crear taula', carregant: false });
+            });
+          }).catch(error => {
+            console.log(error);
+            this.setState({ error: 'Error al obrir base de dades', carregant: false });
+          });
+        },
+        error: (error) => {
+          this.setState({ error: 'Error al parsear CSV', carregant: false });
+        }
       });
-    }).catch(error => {
-      this.handleError('Error al abrir la base de datos', error);
-    });
-  }
-
-  insertarDadesCSV = async (db) => {
-    try {
-      const result = await db.getAllAsync('SELECT COUNT(*) as count FROM consums');
-      if (result[0].count === 0) {
-        await Promise.all(CSV_DATA.map(item => 
-          db.runAsync(
-            'INSERT OR IGNORE INTO consums (id, pais, consum, poblacio) VALUES (?, ?, ?, ?)',
-            [item.id, item.pais, item.consum, item.poblacio]
-          )
-        ));
-      }
-      this.obtenirDades(db);
     } catch (error) {
-      this.handleError('Error insertando datos', error);
+      this.setState({ error: 'Error al leer el archivo CSV', carregant: false });
     }
-  }
-
-  obtenirDades = async (db) => {
-    try {
-      const resultat = await db.getAllAsync('SELECT * FROM consums');
-      this.setState({ dades: resultat, carregant: false });
-    } catch (error) {
-      this.handleError('Error obteniendo datos', error);
-    }
-  }
-
-  handleError = (missatge, error) => {
-    console.log(error);
-    this.setState({ error: missatge, carregant: false });
   }
 
   handleFiltre = (text) => {

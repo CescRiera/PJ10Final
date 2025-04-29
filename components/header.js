@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet,SafeAreaView, Animated, Easing, Dimensions } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Animated, Easing, Dimensions, Platform, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 const ITEM_HEIGHT = 48; // altura aproximada de cada opción
 const ITEM_COUNT = 4;
+
+// Calculate status bar height
+const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
 
 export default function Header() {
   const navigation = useNavigation();
@@ -30,7 +33,8 @@ export default function Header() {
   });
 
   return (
-    <SafeAreaView style={styles.headerWrapper} pointerEvents="box-none">
+    <View style={styles.headerWrapper}>
+      <View style={styles.statusBar} />
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <TouchableOpacity onPress={() => navigation.navigate('Landing')}>
@@ -56,7 +60,7 @@ export default function Header() {
           <Text style={styles.link}>Contacte</Text>
         </TouchableOpacity>
       </Animated.View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -66,6 +70,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 1000,
+    backgroundColor: '#FFFAEB',
+  },
+  statusBar: {
+    height: STATUSBAR_HEIGHT,
+    backgroundColor: '#FFFAEB',
   },
   header: {
     flexDirection: 'row',
@@ -73,7 +82,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 16,
     paddingHorizontal: 24,
-    backgroundColor: '#FFFAEB',
   },
   menuButton: {
     padding: 8,
@@ -93,13 +101,14 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   dropdown: {
-    top: 72, 
+    top: 20, 
     left: 0,
     width: width,
     backgroundColor: '#FFFAEB',
     overflow: 'hidden',
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
+    marginBottom: 15,
   },
   item: {
     height: ITEM_HEIGHT,
