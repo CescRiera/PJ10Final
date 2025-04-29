@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, ScrollView, Platform } from 'react-n
 import * as SQLite from 'expo-sqlite';
 import * as FileSystem from 'expo-file-system';
 import Papa from 'papaparse';
+import { Asset } from 'expo-asset';
 
 const estils = StyleSheet.create({
   contenidor: {
@@ -99,7 +100,14 @@ export class WaterConsumptionTable extends React.Component {
 
   carregarDadesCSV = async () => {
     try {
-      const csvPath = FileSystem.documentDirectory + 'waterconsum.csv';
+      // Get the path to the document directory
+      const documentDirectory = FileSystem.documentDirectory;
+      const csvPath = documentDirectory + 'waterconsum.csv';
+
+      // Check if the file exists in the document directory
+
+
+      // Now read the CSV file
       const csvContent = await FileSystem.readAsStringAsync(csvPath);
       
       Papa.parse(csvContent, {
@@ -154,7 +162,8 @@ export class WaterConsumptionTable extends React.Component {
         }
       });
     } catch (error) {
-      this.setState({ error: 'Error al leer el archivo CSV', carregant: false });
+      console.error('Error loading CSV:', error);
+      this.setState({ error: 'Error al cargar el archivo CSV: ' + error.message, carregant: false });
     }
   }
 
