@@ -38,13 +38,11 @@ class Investment {
 }
 
 const InvestmentsScreen = ({ navigation }) => {
-  // Animation references
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const staggeredAnim1 = useRef(new Animated.Value(0)).current;
   const staggeredAnim2 = useRef(new Animated.Value(0)).current;
   const fadeUpAnim = useRef(new Animated.Value(0)).current;
 
-  // Sample investment data
   const africanInvestments = [
     new Investment(
       "Iniciativa de Purificació d'Aigua a Kenya",
@@ -117,17 +115,14 @@ const InvestmentsScreen = ({ navigation }) => {
     )
   ];
 
-  // Format currency helper function
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('ca-ES', { style: 'currency', currency: 'EUR' }).format(amount);
   };
   
-  // Title formatting helper
   const formatInvestmentTitle = (title) => {
     return title.length > 40 ? title.substring(0, 40) + '...' : title;
   };
 
-  // Start animations on component mount
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -135,7 +130,6 @@ const InvestmentsScreen = ({ navigation }) => {
       useNativeDriver: true
     }).start();
 
-    // Staggered animations for cards
     Animated.stagger(100, [
       Animated.timing(staggeredAnim1, {
         toValue: 1,
@@ -156,9 +150,7 @@ const InvestmentsScreen = ({ navigation }) => {
     }).start();
   }, []);
 
-  // Render investment card
   const renderInvestmentCard = (investment, index, animValue) => {
-    // Calculate animation delay based on index
     const animDelay = index * 100;
     
     return (
